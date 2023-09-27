@@ -4,6 +4,9 @@ import 'package:url_launcher/url_launcher.dart'; // 다른 페이지로 이동�
 import 'ranking.dart';
 import 'picture.dart';
 import 'my.dart';
+import 'login.dart';
+import 'signup.dart';
+import 'sudokugame.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,10 +27,12 @@ class MyApp extends StatelessWidget {
       routes: {
         // map 형식으로 라우트하게끔
         // '/text': (context) => TextPage(),
-        // '/automatic': (context) => AutomaticPage(),
+        '/automatic': (context) => SudokuGame(),
         '/picture': (context) => PicturePage(),
         // '/ar': (context) => ARPage(),
         '/ranking': (context) => RankingPage(),
+        '/login': (context) => LoginPage(), // 로그인 화면 설정
+        '/signup': (context) => SignupPage(), // 회원가입 화면 설정
       },
     );
   }
@@ -52,12 +57,16 @@ _launchURL(String url) async {
   }
 }
 
+// 앱의 홈페이지(앱을 실행했을 때 처음 보이는 페이지) 정의: StatefulWidget 상속
 class _MyHomePageState extends State<MyHomePage> {
   File? _image;
 
+  // 화면을 렌더링하는 메서드: Scaffold 위젯을 이용하여 앱의 레이아웃 정의
+  // Scaffold 위젯: 앱의 기본 레이아웃 구조 정의 (속성: appbar, body, drawer 등)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 상단바 정의
       appBar: AppBar(
         title: Row(
           children: [
@@ -69,16 +78,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: 350),
+            SizedBox(width: 300),
             _buildAppBarItem(context, 'Text', '/text'),
-            SizedBox(width: 100),
+            SizedBox(width: 70),
             _buildAppBarItem(context, 'Automatic', '/automatic'),
-            SizedBox(width: 100),
+            SizedBox(width: 70),
             _buildAppBarItem(context, 'Picture', '/picture'),
-            SizedBox(width: 100),
+            SizedBox(width: 70),
             _buildAppBarItem(context, 'AR', '/ar'),
-            SizedBox(width: 100),
+            SizedBox(width: 70),
             _buildAppBarItem(context, 'Ranking', '/ranking'),
+            SizedBox(width: 150),
+            _buildAppBarItem(context, 'login', '/login'),
+            SizedBox(width: 20),
+            _buildAppBarItem(context, 'signup', '/signup')
           ],
         ),
         actions: [
@@ -115,7 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // 상단바의 항목을 만들기 위한 함수
   Widget _buildAppBarItem(BuildContext context, String text, String route) {
+    // InkWell: 시각적으로 터치 피드백 제공 (일반적으로 잉크 효과)
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, route);

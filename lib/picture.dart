@@ -31,10 +31,11 @@ class PicturePageState extends State<PicturePage> {
         ),
       );
 
-      // 이미지 선택이 완료된 후, 어떻게 할지 나중에 동장 추가해야 함.
+      // 이미지 선택이 완료된 후, 어떻게 할지 나중에 동작 추가해야 함.
     }
   }
 
+  // 화면을 렌더링하는 메서드
   @override
   Widget build(BuildContext context) {
     return Scaffold(
