@@ -44,7 +44,6 @@ class LoginPage extends StatelessWidget {
           'LOGIN PAGE',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.grey[900], // 상단 내비게이션바 색상 설정
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0), // 여백 설정
@@ -71,7 +70,10 @@ class LoginPage extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () => login(context), // 로그인 버튼 클릭시 로그인 함수 호출
-                child: Text('LOGIN'), // 버튼 텍스트 설정
+                child: Text(
+                  'LOGIN',
+                  style: TextStyle(color: Colors.white),
+                ), // 버튼 텍스트 스타일 설정
                 style: ElevatedButton.styleFrom(
                   primary: Colors.black, // 버튼 색상 설정
                 ),
