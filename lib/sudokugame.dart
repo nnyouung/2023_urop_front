@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SudokuGame extends StatefulWidget {
   const SudokuGame({super.key});
@@ -11,14 +13,46 @@ class SudokuGame extends StatefulWidget {
 class _SudokuGameState extends State<SudokuGame> {
   late List<List<int>> sudokuBoard; // 스도쿠 보드 상태를 나타내는 2D 리스트
   int selectedNumber = -1; // 선택된 숫자 초기값은 -1
-  int selectedRow = -1; // 선택된 행 초기값은 -1
-  int selectedCol = -1; // 선택된 열 초기값은 -1
+  // int selectedRow = -1; // 선택된 행 초기값은 -1
+  // int selectedCol = -1; // 선택된 열 초기값은 -1
 
   @override
   void initState() {
     super.initState();
     // 스도쿠 보드 생성 (0은 빈 칸)
     sudokuBoard = List.generate(9, (_) => List<int>.filled(9, 0));
+    // 서버에서 스도쿠 데이터 가져오기
+    fetchSudokuData();
+  }
+
+  // 스도쿠 데이터를 사용하여 보드를 채우는 함수
+  void fillSudokuBoard(List<List<int>> sudokuData) {
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++) {
+        sudokuBoard[row][col] = sudokuData[row][col];
+      }
+    }
+  }
+
+  // 서버에서 데이터 받아오기
+  Future<void> fetchSudokuData() async {
+    final response = await http.post(
+      Uri.parse(
+          'http://localhost:51162/get_sudoku_arr'), // 서버의 POST 엔드포인트 URL로 변경
+      headers: {
+        'Content-Type': 'application/json', // JSON 형식으로 요청을 보냅니다.
+      },
+      body: json.encode({}), // 요청 바디는 비어 있습니다.
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final sudokuData = data['arr']; // 서버에서 받은 스도쿠 데이터
+
+      fillSudokuBoard(sudokuData); // 서버에서 받은 데이터로 스도쿠 보드를 채웁니다.
+    } else {
+      throw Exception('Failed to fetch Sudoku data');
+    }
   }
 
   // 스도쿠 판에 숫자를 그리는 함수
