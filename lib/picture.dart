@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart'; // 사진 올리기 위함
 
 class PicturePage extends StatefulWidget {
+  const PicturePage({super.key});
+
   @override
   PicturePageState createState() => PicturePageState();
 }
@@ -26,7 +28,7 @@ class PicturePageState extends State<PicturePage> {
   void _onCompleteButtonPressed() {
     if (_imageSelected) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('이미지 선택 완료!'),
         ),
       );
@@ -40,20 +42,20 @@ class PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Picture Page'),
+        title: const Text('Picture Page'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(16.0),
             ),
             Container(
               // 사진이 들어갈 사각형 설정
               width: 500,
               height: 500,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: null,
                 color: Colors.grey,
               ),
@@ -65,14 +67,14 @@ class PicturePageState extends State<PicturePage> {
                       children: [
                         IconButton(
                           // 카메라 아이콘
-                          icon: Icon(Icons.camera),
+                          icon: const Icon(Icons.camera),
                           onPressed: () {
                             _getImage(ImageSource.camera);
                           },
                         ),
                         IconButton(
                           // 사진 불러오기 아이콘
-                          icon: Icon(Icons.photo),
+                          icon: const Icon(Icons.photo),
                           onPressed: () {
                             _getImage(ImageSource.gallery);
                           },
@@ -80,10 +82,10 @@ class PicturePageState extends State<PicturePage> {
                       ],
                     ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _imageSelected ? _onCompleteButtonPressed : null,
-              child: Text('선택 완료'),
+              child: const Text('선택 완료'),
             ),
           ],
         ),

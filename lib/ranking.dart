@@ -13,6 +13,8 @@ class UserRanking {
 }
 
 class RankingPage extends StatelessWidget {
+  RankingPage({super.key});
+
   // 가상의 유저 랭킹 데이터
   final List<UserRanking> userRankingList = [
     UserRanking(nickname: 'User1', rank: 1, time: '00:45'),
@@ -27,23 +29,23 @@ class RankingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Ranking'),
+        title: const Text('User Ranking'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'User ranking',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 0),
+            const SizedBox(height: 0),
             DataTable(
               // 랭킹 (표 형태)
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Rank')),
                 DataColumn(label: Text('Nickname')),
                 DataColumn(label: Text('Time')),

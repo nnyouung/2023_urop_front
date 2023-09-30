@@ -13,6 +13,8 @@ class My {
 }
 
 class MyPage extends StatelessWidget {
+  const MyPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,6 +28,8 @@ class MyPage extends StatelessWidget {
 }
 
 class MyRankingPage extends StatelessWidget {
+  MyRankingPage({super.key});
+
   // 가상의 유저 랭킹 데이터
   final List<My> userRankingList = [
     My(score: '2000', rank: 1, date: '2023.09.27 20:45'),
@@ -40,28 +44,29 @@ class MyRankingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Ranking'),
+        title: const Text('User Ranking'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               // 프로필 이미지 -> 일단 임의로 채워놓음
               radius: 60,
-              backgroundImage:
-                  AssetImage('/Users/eun/flutter_web/lib/img/profile-user.png'),
+              backgroundImage: AssetImage(
+                '/Users/eun/urop_sudoku/sudoku_front/lib/img/profile-user.png', // 경로 바꿔주기 (pubspec.yaml의 경로도 바꿔줘야 함)
+              ),
             ),
-            SizedBox(height: 20), // 간격 조정
-            Text(
+            const SizedBox(height: 20), // 간격 조정
+            const Text(
               // 유저 닉네임 -> 일단 임의로 채워놓음
               'UserNickname',
               style: TextStyle(
                 fontSize: 15,
               ),
             ),
-            SizedBox(height: 70),
-            Text(
+            const SizedBox(height: 70),
+            const Text(
               // 표 제목
               'My ranking',
               style: TextStyle(
@@ -69,10 +74,10 @@ class MyRankingPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             DataTable(
               // 표
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Rank')),
                 DataColumn(label: Text('Score')),
                 DataColumn(label: Text('Date')),

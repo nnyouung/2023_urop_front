@@ -7,6 +7,8 @@ class SignupPage extends StatelessWidget {
   final TextEditingController passwordCheckController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
+  SignupPage({super.key});
+
   void check(BuildContext context) {
     // 회원가입 로직
 
@@ -28,11 +30,11 @@ class SignupPage extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("경고"),
-            content: Text("모든 필드를 입력해주세요."),
+            title: const Text("경고"),
+            content: const Text("모든 필드를 입력해주세요."),
             actions: [
               TextButton(
-                child: Text("확인"),
+                child: const Text("확인"),
                 onPressed: () {
                   Navigator.of(context).pop(); // 다이얼로그 닫기
                 },
@@ -47,11 +49,11 @@ class SignupPage extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("경고"),
-            content: Text("비밀번호가 일치하지 않습니다."),
+            title: const Text("경고"),
+            content: const Text("비밀번호가 일치하지 않습니다."),
             actions: [
               TextButton(
-                child: Text("확인"),
+                child: const Text("확인"),
                 onPressed: () {
                   Navigator.of(context).pop(); // 다이얼로그 닫기
                 },
@@ -66,11 +68,11 @@ class SignupPage extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("회원가입 성공"),
-            content: Text("회원가입이 완료되었습니다."),
+            title: const Text("회원가입 성공"),
+            content: const Text("회원가입이 완료되었습니다."),
             actions: [
               TextButton(
-                child: Text("확인"),
+                child: const Text("확인"),
                 onPressed: () {
                   Navigator.of(context).pop(); // 다이얼로그 닫기
                   Navigator.pop(context); // 회원가입 성공 시 메인 화면으로 이동
@@ -87,26 +89,26 @@ class SignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'SIGNUP PAGE',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0), // 여백 설정
+        padding: const EdgeInsets.all(16.0), // 여백 설정
         child: Column(
           children: [
             // 아이디 입력 필드
             TextField(
               controller: idController, // 컨트롤러 설정
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'ID', // 레이블 텍스트 설정
               ),
             ),
             // 유저네임 입력 필드
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'USERNAME',
               ),
             ),
@@ -114,7 +116,7 @@ class SignupPage extends StatelessWidget {
             TextField(
               controller: passwordController,
               obscureText: true, // 비밀번호 입력 시 입력 내용을 가려서 보이지 않게 함
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'PASSWORD',
               ),
             ),
@@ -122,28 +124,28 @@ class SignupPage extends StatelessWidget {
             TextField(
               controller: passwordCheckController,
               obscureText: true, // 비밀번호 확인 시 입력 내용을 가려서 보이지 않게 함
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'CHECK PASSWORD',
               ),
             ),
             // 이메일 입력 필드
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'EMAIL',
               ),
             ),
-            SizedBox(height: 20), // 위젯간의 간격 조정
+            const SizedBox(height: 20), // 위젯간의 간격 조정
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () => check(context), // 버튼 클릭 시 check 함수 호출
-                child: Text(
+                onPressed: () => check(context), // 버튼 텍스트 스타일 설정
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black, // 버튼 색상 설정
+                ), // 버튼 클릭 시 check 함수 호출
+                child: const Text(
                   'SIGNUP',
                   style: TextStyle(color: Colors.white),
-                ), // 버튼 텍스트 스타일 설정
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.black, // 버튼 색상 설정
                 ),
               ),
             ),

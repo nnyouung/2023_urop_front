@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SudokuGame extends StatefulWidget {
+  const SudokuGame({super.key});
+
   // const SudokuGame({super.key});
   @override
   _SudokuGameState createState() => _SudokuGameState();

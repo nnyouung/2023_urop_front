@@ -70,52 +70,52 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Row(
           children: [
-            SizedBox(width: 50), // 간격 조정
+            const SizedBox(width: 50), // 간격 조정
             Text(
               // 타이틀 글씨 설정
               widget.title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: 300),
+            const SizedBox(width: 300),
             _buildAppBarItem(context, 'Text', '/text'),
-            SizedBox(width: 70),
+            const SizedBox(width: 70),
             _buildAppBarItem(context, 'Automatic', '/automatic'),
-            SizedBox(width: 70),
+            const SizedBox(width: 70),
             _buildAppBarItem(context, 'Picture', '/picture'),
-            SizedBox(width: 70),
+            const SizedBox(width: 70),
             _buildAppBarItem(context, 'AR', '/ar'),
-            SizedBox(width: 70),
+            const SizedBox(width: 70),
             _buildAppBarItem(context, 'Ranking', '/ranking'),
-            SizedBox(width: 150),
+            const SizedBox(width: 150),
             _buildAppBarItem(context, 'login', '/login'),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             _buildAppBarItem(context, 'signup', '/signup')
           ],
         ),
         actions: [
           IconButton(
             // 사용자 계정
-            icon: Icon(Icons.person),
+            icon: const Icon(Icons.person),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyPage()),
+                MaterialPageRoute(builder: (context) => const MyPage()),
               );
             },
           ),
           IconButton(
             // 설정
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               // 설정 페이지로 이동하는 코드 나중에 추가하기
             },
           ),
-          SizedBox(width: 50),
+          const SizedBox(width: 50),
         ],
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16.0,
         ),
       ),
