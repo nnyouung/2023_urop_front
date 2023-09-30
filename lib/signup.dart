@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignupPage extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
@@ -9,23 +11,21 @@ class SignupPage extends StatelessWidget {
 
   SignupPage({super.key});
 
-  void check(BuildContext context) {
-    // 회원가입 로직
-
-    // 1. 각각의 입력 필드에서 사용자가 입력한 값을 가져옴
+  Future<void> check(BuildContext context) async {
+    // 각각의 입력 필드에서 사용자가 입력한 값을 가져옴
     String id = idController.text;
     String username = usernameController.text;
     String password = passwordController.text;
     String passwordCheck = passwordCheckController.text;
     String email = emailController.text;
 
-    // 2. 모든 필드가 채워져 있는지 확인
+    // 필수 필드가 모두 채워져 있는지 확인
     if (id.isEmpty ||
         username.isEmpty ||
         password.isEmpty ||
         passwordCheck.isEmpty ||
         email.isEmpty) {
-      // 3. 만약 하나라도 비어있으면 경고 다이얼로그 표시
+      // 필수 필드 중 하나라도 비어 있으면 경고 다이얼로그 표시
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -43,27 +43,29 @@ class SignupPage extends StatelessWidget {
           );
         },
       );
-    } else if (password != passwordCheck) {
-      // 4. 비밀번호와 비밀번호 확인이 일치하지 않을 경우 경고 다이얼로그 표시
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("경고"),
-            content: const Text("비밀번호가 일치하지 않습니다."),
-            actions: [
-              TextButton(
-                child: const Text("확인"),
-                onPressed: () {
-                  Navigator.of(context).pop(); // 다이얼로그 닫기
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // 5. 모든 필드가 올바르게 입력되었을 경우 회원가입 성공 다이얼로그 표시 후 메인 화면으로 이동
+      return;
+    }
+
+    // 서버로 회원가입 요청을 보낼 URL 설정 (Django 서버의 URL에 맞게 변경해야 함)
+    String signupUrl = 'http://localhost:';
+
+    // POST 요청 데이터 생성
+    Map<String, String> requestData = {
+      'id': id,
+      'username': username,
+      'password': password,
+      'passwordCheck': passwordCheck,
+      'email': email,
+    };
+
+    // POST 요청 보내기
+    final response = await http.post(
+      Uri.parse(signupUrl),
+      body: requestData,
+    );
+
+    if (response.statusCode == 200) {
+      // 회원가입 성공 시의 동작
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -76,6 +78,25 @@ class SignupPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop(); // 다이얼로그 닫기
                   Navigator.pop(context); // 회원가입 성공 시 메인 화면으로 이동
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // 회원가입 실패 시의 동작
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("회원가입 실패"),
+            content: const Text("회원가입에 실패하였습니다."),
+            actions: [
+              TextButton(
+                child: const Text("확인"),
+                onPressed: () {
+                  Navigator.of(context).pop(); // 다이얼로그 닫기
                 },
               ),
             ],
