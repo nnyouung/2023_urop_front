@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart'; // 토큰 저장을 위한 패키지
+import 'main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       prefs.setString('token', token);
 
       // 로그인 성공 시 메인 화면으로 이동
-      Navigator.pop(context);
+      Navigator.pushNamed(context, '/main');
     } else if (response.statusCode == 401) {
       // 아이디나 비밀번호가 올바르지 않을 경우, 오류 다이얼로그 표시
       showDialog(
@@ -116,4 +117,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-void main() => runApp(const MaterialApp(home: LoginPage()));
+void main() => runApp(
+      MaterialApp(
+        routes: {
+          '/': (context) => const LoginPage(),
+          '/main': (context) => const MyApp(),
+        },
+      ),
+    );

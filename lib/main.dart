@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: const MyHomePage(title: 'Make sudoku'),
+      home: const LoginPage(),
       routes: {
         // map 형식으로 라우트하게끔
         '/automatic': (context) => const SudokuGame(),
