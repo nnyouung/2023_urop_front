@@ -5,28 +5,26 @@ import 'dart:convert';
 class SudokuGame extends StatefulWidget {
   const SudokuGame({super.key});
 
-  // const SudokuGame({super.key});
   @override
   _SudokuGameState createState() => _SudokuGameState();
 }
 
 class _SudokuGameState extends State<SudokuGame> {
-  late List<List<int>> sudokuBoard; // 스도쿠 보드 상태를 나타내는 2D 리스트
-  int selectedNumber = -1; // 선택된 숫자 초기값은 -1
-  // int selectedRow = -1; // 선택된 행 초기값은 -1
-  // int selectedCol = -1; // 선택된 열 초기값은 -1
+  late List<List<int>> sudokuBoard; // 스도쿠 게임 보드
+  int selectedNumber = -1; // 숫자패드에서 선택된 숫자
+  bool eraseMode = false; // 지우기 모드
+  List<HistoryItem> history = []; // 실행 취소를 위해 과거 입력들 저장하는 리스트
 
   @override
   void initState() {
+    // 초기화
     super.initState();
-    // 스도쿠 보드 생성 (0은 빈 칸)
     sudokuBoard = List.generate(9, (_) => List<int>.filled(9, 0));
-    // 서버에서 스도쿠 데이터 가져오기
     fetchSudokuData();
   }
 
-  // 스도쿠 데이터를 사용하여 보드를 채우는 함수
   void fillSudokuBoard(List<List<int>> sudokuData) {
+    // 스도쿠 보드에 숫자를 채우는 함수
     for (int row = 0; row < 9; row++) {
       for (int col = 0; col < 9; col++) {
         sudokuBoard[row][col] = sudokuData[row][col];
@@ -34,29 +32,71 @@ class _SudokuGameState extends State<SudokuGame> {
     }
   }
 
-  // 서버에서 데이터 받아오기
   Future<void> fetchSudokuData() async {
+    // 스도쿠 게임(list) 불러오는 함수
     final response = await http.post(
-      Uri.parse(
-          'http://localhost:51162/get_sudoku_arr'), // 서버의 POST 엔드포인트 URL로 변경
+      Uri.parse('http://localhost:51162/get_sudoku_arr'),
       headers: {
-        'Content-Type': 'application/json', // JSON 형식으로 요청을 보냅니다.
+        'Content-Type': 'application/json',
       },
-      body: json.encode({}), // 요청 바디는 비어 있습니다.
+      body: json.encode({}),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final sudokuData = data['arr']; // 서버에서 받은 스도쿠 데이터
+      final sudokuData = data['arr'];
 
-      fillSudokuBoard(sudokuData); // 서버에서 받은 데이터로 스도쿠 보드를 채웁니다.
+      fillSudokuBoard(sudokuData);
     } else {
       throw Exception('Failed to fetch Sudoku data');
     }
   }
 
-  // 스도쿠 판에 숫자를 그리는 함수
+  Future<void> fetchSudokuAnswerData() async {
+    // 스도쿠 정답 데이터 불러오는 함수
+    final response = await http.post(
+      Uri.parse('http://localhost:51162/'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final AnswerData = data['answer'];
+
+      fillSudokuBoard(AnswerData);
+    } else {
+      throw Exception('Failed to fetch Sudoku data');
+    }
+  }
+
+  Future<void> fetchIsSuccess() async {
+    // 스도쿠 정답 확인 함수
+    final response = await http.post(
+      Uri.parse('http://localhost:51162/'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({"sudokuData": sudokuBoard}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data['Success'] == 'Success') {
+        // 성공했을 때 이벤트
+      } else {
+        // 실패했을 때 이벤트
+      }
+    } else {
+      throw Exception('Failed to check Success');
+    }
+  }
+
   Widget buildSudokuBoard() {
+    // 스도쿠 게임 보드 만드는 함수
     return Column(
       children: List.generate(9, (row) {
         return Row(
@@ -64,15 +104,17 @@ class _SudokuGameState extends State<SudokuGame> {
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  if (selectedNumber != -1) {
-                    // 선택한 숫자로 게임 보드의 셀의 숫자를 변경
+                  if (eraseMode) {
+                    sudokuBoard[row][col] = 0;
+                  } else if (selectedNumber != -1) {
+                    history.add(HistoryItem(row, col, sudokuBoard[row][col]));
                     sudokuBoard[row][col] = selectedNumber;
                   }
                 });
               },
               child: Container(
-                width: 30,
-                height: 30,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   border: Border.all(),
                   color: (((0 <= row && row <= 2) && (0 <= col && col <= 2)) ||
@@ -80,8 +122,7 @@ class _SudokuGameState extends State<SudokuGame> {
                           ((6 <= row && row <= 8) && (6 <= col && col <= 8)) ||
                           ((0 <= row && row <= 2) && (6 <= col && col <= 8)) ||
                           ((6 <= row && row <= 8) && (0 <= col && col <= 2)))
-                      ? const Color.fromARGB(
-                          255, 232, 232, 232) // 선택된 셀은 아주 옅은 회색으로 색상 변경
+                      ? const Color.fromARGB(255, 232, 232, 232)
                       : Colors.white,
                 ),
                 alignment: Alignment.center,
@@ -99,46 +140,51 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 숫자 패드를 그리는 함수
   Widget buildNumberPad() {
+    // 숫자 패드 만드는 함수
     return Column(
       children: [
         buildButtonRow(
             [buildUndoButton(), buildClearButton(), buildNewGameButton()], 1.0),
         const SizedBox(height: 20),
-        buildNumberGrid(), // 숫자 패드 그리기
+        buildNumberGrid(),
         const SizedBox(height: 20),
         buildButtonRow([buildCheckButton()], 2.0),
       ],
     );
   }
 
-  // 숫자 패드 그리는 함수
   Widget buildNumberGrid() {
+    // 숫자 패드의 배열 만드는 함수
     return GridView.builder(
       shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10.0,
       ),
       itemBuilder: (context, index) {
         final number = index + 1;
         return GestureDetector(
           onTap: () {
             setState(() {
-              selectedNumber = number; // 선택된 숫자 업데이트
+              if (eraseMode) {
+                eraseMode = false;
+                selectedNumber = number;
+              } else {
+                selectedNumber = number;
+              }
             });
           },
           child: Container(
-            width: 30,
-            height: 30,
+            width: 35,
+            height: 35,
             decoration: BoxDecoration(
               border: Border.all(),
               color: selectedNumber == number
-                  ? Colors.grey[200]
-                  : Colors.white, // 선택된 숫자는 회색으로 색상 변경
-              shape: BoxShape.rectangle, // 사각형 모양 버튼
+                  ? const Color.fromARGB(255, 184, 184, 184)
+                  : Colors.white,
+              shape: BoxShape.rectangle,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -152,11 +198,13 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 실행 취소 버튼을 만드는 함수
   Widget buildUndoButton() {
+    // 실행 취소 버튼
     return ElevatedButton(
       onPressed: () {
-        // 실행 취소 버튼 눌렀을 때의 동작 추가 부분
+        setState(() {
+          undoLastAction();
+        });
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(0.0),
@@ -168,14 +216,18 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 지우기 버튼을 만드는 함수
   Widget buildClearButton() {
+    // 지우기 버튼
     return ElevatedButton(
       onPressed: () {
-        // 지우기 버튼 눌렀을 때의 동작 추가 부분
+        setState(() {
+          eraseMode = !eraseMode;
+        });
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(0.0),
+        backgroundColor:
+            eraseMode ? const Color.fromARGB(255, 217, 217, 217) : null,
       ),
       child: const Text(
         '지우기',
@@ -184,14 +236,17 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 새 게임 버튼을 만드는 함수
   Widget buildNewGameButton() {
+    // 새 게임 버튼
     return ElevatedButton(
       onPressed: () {
-        // 새 게임 버튼 눌렀을 때의 동작 추가
+        setState(() {
+          // fetchSudokuData();
+          sudokuBoard = List.generate(9, (_) => List<int>.filled(9, 0));
+        });
       },
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(0.0), //
+        padding: const EdgeInsets.all(0.0),
       ),
       child: const Text(
         '새 게임',
@@ -200,11 +255,13 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 답 확인하기 버튼을 만드는 함수
   Widget buildCheckButton() {
+    // 정답 확인 버튼
     return ElevatedButton(
       onPressed: () {
-        // 답 확인하기 버튼 눌렀을 때의 동작 추가 부분
+        setState(() {
+          //추가
+        });
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(0.0),
@@ -216,8 +273,8 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
-  // 버튼들을 가로로 배치하는 함수
   Widget buildButtonRow(List<Widget> buttons, double buttonSize) {
+    // 기능 버튼들 배치하는 함수
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: buttons.map((button) {
@@ -229,8 +286,21 @@ class _SudokuGameState extends State<SudokuGame> {
     );
   }
 
+  void undoLastAction() {
+    // 실행 취소 기능 함수
+    if (history.isNotEmpty) {
+      final lastAction = history.removeLast();
+      final row = lastAction.row;
+      final col = lastAction.col;
+      final value = lastAction.value;
+
+      sudokuBoard[row][col] = value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // build(전체 요소들 배치)
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sudoku Game'),
@@ -240,7 +310,7 @@ class _SudokuGameState extends State<SudokuGame> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: 350,
+              width: 400,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -249,10 +319,10 @@ class _SudokuGameState extends State<SudokuGame> {
               ),
             ),
             const SizedBox(
-              width: 50,
+              width: 110,
             ),
             SizedBox(
-              width: 90, // 숫자 패드 폭
+              width: 110,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -265,4 +335,24 @@ class _SudokuGameState extends State<SudokuGame> {
       ),
     );
   }
+}
+
+class SudokuApp extends StatelessWidget {
+  const SudokuApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: SudokuGame(),
+    );
+  }
+}
+
+class HistoryItem {
+  // 실행 취소를 위해 사용자의 입력을 class를 이용해 저장
+  final int row;
+  final int col;
+  final int value;
+
+  HistoryItem(this.row, this.col, this.value);
 }
