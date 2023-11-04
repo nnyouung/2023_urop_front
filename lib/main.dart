@@ -1,20 +1,152 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:url_launcher/url_launcher.dart'; // 다른 페이지로 이동하기 위함
-import 'ranking.dart';
-import 'picture.dart';
-import 'my.dart';
-import 'login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart'; // 토큰 저장을 위한 패키지
+import 'home.dart';
 import 'signup.dart';
-import 'sudokugame.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyLogin());
 }
 
-// 앱의 기본 구성을 정의하는 클래스
+class MyLogin extends StatelessWidget {
+  const MyLogin({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Login',
+      theme: ThemeData(
+        primarySwatch: Colors.grey,
+      ),
+      home: const LoginPage(title: 'Login'),
+      initialRoute: '/',
+      routes: {
+        '/home': (context) => const MyHomePage(title: 'Home'),
+      },
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  // 서버 주소
+  final String serverUrl = 'http://localhost:'; // Django 서버 주소로 변경해야 함
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0), // 여백 설정
+        child: Column(
+          children: [
+            // 아이디 입력 필드
+            TextField(
+              controller: usernameController, // 컨트롤러 설정
+              decoration: const InputDecoration(
+                labelText: '아이디 입력', // 레이블 텍스트 설정
+              ),
+            ),
+            // 비밀번호 입력 필드
+            TextField(
+              controller: passwordController, // 컨트롤러 설정
+              obscureText: true, // 비밀번호 입력 시 입력 내용을 가려서 보이지 않게 함
+              decoration: const InputDecoration(
+                labelText: '비밀번호 입력', // 레이블 텍스트 설정
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignupPage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text(
+                    '회원가입',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 20), // 간격 조정
+                ElevatedButton(
+                  onPressed: () => login(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text(
+                    '로그인',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> login(BuildContext context) async {
+    String username = usernameController.text;
+    String password = passwordController.text;
+
+    if (username == "admin" && password == "password") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const MyHomePage(title: 'Home'), // 로그인 성공 시 이동할 페이지
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("로그인 실패"),
+            content: const Text("아이디나 비밀번호가 올바르지 않습니다."),
+            actions: [
+              TextButton(
+                child: const Text("확인"),
+                onPressed: () {
+                  Navigator.of(context).pop(); // 다이얼로그 닫기
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+}
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,116 +155,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: const LoginPage(),
-      routes: {
-        // map 형식으로 라우트하게끔
-        '/automatic': (context) => const SudokuGame(),
-        '/picture': (context) => const PicturePage(),
-        // '/ar': (context) => ARPage(),
-        '/ranking': (context) => RankingPage(),
+      home: const MyLogin(), // Home 또는 원하는 위젯으로 대체
+      routes: const {
+        // 여기에 라우트 추가
       },
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-// 다른 페이지로 넘어가기 위한 함수: 주어진 url을 열 수 있으면 해당 url로 이동
-// 취소선: 해당 코드 줄이 "비동기 함수"를 호출하기 때문으로, 해당 함수가 비동기적으로 실행되고 완료될 때까지 기다리라는 의미 -> 비동기 함수 호출 시 앞에 await 키워드를 사용
-_launchURL(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'URL을 열 수 없습니다: $url';
-  }
-}
-
-// 앱의 홈페이지(앱을 실행했을 때 처음 보이는 페이지) 정의: StatefulWidget 상속
-class _MyHomePageState extends State<MyHomePage> {
-  File? _image;
-
-  // 화면을 렌더링하는 메서드: Scaffold 위젯을 이용하여 앱의 레이아웃 정의
-  // Scaffold 위젯: 앱의 기본 레이아웃 구조 정의 (속성: appbar, body, drawer 등)
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // 상단바 정의
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const SizedBox(width: 50), // 간격 조정
-            Text(
-              // 타이틀 글씨 설정
-              widget.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(width: 500),
-            _buildAppBarItem(context, 'Automatic', '/automatic'),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Picture', '/picture'),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'AR', '/ar'),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Ranking', '/ranking'),
-            const SizedBox(width: 150),
-          ],
-        ),
-        actions: [
-          IconButton(
-            // 사용자 계정
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyPage()),
-              );
-            },
-          ),
-          IconButton(
-            // 설정
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // 설정 페이지로 이동하는 코드 나중에 추가하기
-            },
-          ),
-          const SizedBox(width: 50),
-        ],
-      ),
-      body: const Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16.0),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 상단바의 항목을 만들기 위한 함수
-  Widget _buildAppBarItem(BuildContext context, String text, String route) {
-    // InkWell: 시각적으로 터치 피드백 제공 (일반적으로 잉크 효과)
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16.0,
-        ),
-      ),
     );
   }
 }
