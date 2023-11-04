@@ -26,13 +26,10 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Make sudoku'),
       routes: {
         // map 형식으로 라우트하게끔
-        // '/text': (context) => TextPage(),
-        '/automatic': (context) => SudokuGame(),
-        '/picture': (context) => PicturePage(),
+        '/automatic': (context) => const SudokuGame(),
+        '/picture': (context) => const PicturePage(),
         // '/ar': (context) => ARPage(),
         '/ranking': (context) => RankingPage(),
-        '/login': (context) => LoginPage(), // 로그인 화면 설정
-        '/signup': (context) => SignupPage(), // 회원가입 화면 설정
       },
     );
   }
@@ -78,9 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 300),
-            _buildAppBarItem(context, 'Text', '/text'),
-            const SizedBox(width: 70),
+            const SizedBox(width: 500),
             _buildAppBarItem(context, 'Automatic', '/automatic'),
             const SizedBox(width: 70),
             _buildAppBarItem(context, 'Picture', '/picture'),
@@ -89,9 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(width: 70),
             _buildAppBarItem(context, 'Ranking', '/ranking'),
             const SizedBox(width: 150),
-            _buildAppBarItem(context, 'login', '/login'),
-            const SizedBox(width: 20),
-            _buildAppBarItem(context, 'signup', '/signup')
           ],
         ),
         actions: [
