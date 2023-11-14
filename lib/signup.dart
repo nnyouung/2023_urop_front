@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:http/http.dart' as http; // HTTP 패키지 import
+import 'dart:convert'; // JSON 인코딩/디코딩을 위한 패키지 import
 
 class SignupPage extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
@@ -39,7 +39,7 @@ class SignupPage extends StatelessWidget {
     }
 
     // 서버로 회원가입 요청을 보낼 URL 설정 (Django 서버의 URL에 맞게 변경해야 함)
-    String signupUrl = 'http://localhost:8000/api/signup';
+    String signupUrl = 'http://ec2-54-172-150-42.compute-1.amazonaws.com/signup';
 
     // POST 요청 데이터 생성
     Map<String, String> requestData = {
