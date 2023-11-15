@@ -54,7 +54,7 @@ class MyRankingPage extends StatelessWidget {
               // 프로필 이미지 -> 일단 임의로 채워놓음
               radius: 60,
               backgroundImage: AssetImage(
-                '/Users/eun/urop_sudoku/sudoku_front/lib/img/profile-user.png', // 경로 바꿔주기 (pubspec.yaml의 경로도 바꿔줘야 함)
+                '/Users/eojin1/Front/lib/img/profile-user.png', // 경로 바꿔주기 (pubspec.yaml의 경로도 바꿔줘야 함)
               ),
             ),
             const SizedBox(height: 20), // 간격 조정

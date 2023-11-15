@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart'; // 다른 페이지로 이동�
 import 'ranking.dart';
 import 'picture.dart';
 import 'my.dart';
-import 'main.dart';
 import 'sudokugame.dart';
 
 void main() {
@@ -67,21 +66,21 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Row(
           children: [
             const SizedBox(width: 50), // 간격 조정
-            Text(
+            const Text(
               // 타이틀 글씨 설정
-              widget.title,
-              style: const TextStyle(
+              "Make Sudoku",
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(width: 500),
-            _buildAppBarItem(context, 'Automatic', '/automatic'),
+            _buildAppBarItem(context, 'Automatic', const SudokuGame()),
             const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Picture', '/picture'),
+            _buildAppBarItem(context, 'Picture', const PicturePage()),
             const SizedBox(width: 70),
-            _buildAppBarItem(context, 'AR', '/ar'),
+            _buildAppBarItem(context, 'AR', RankingPage()),
             const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Ranking', '/ranking'),
+            _buildAppBarItem(context, 'Ranking', RankingPage()),
             const SizedBox(width: 150),
           ],
         ),
@@ -120,11 +119,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // 상단바의 항목을 만들기 위한 함수
-  Widget _buildAppBarItem(BuildContext context, String text, String route) {
-    // InkWell: 시각적으로 터치 피드백 제공 (일반적으로 잉크 효과)
+  // Widget _buildAppBarItem(BuildContext context, String text, String route) {
+  //   // InkWell: 시각적으로 터치 피드백 제공 (일반적으로 잉크 효과)
+  //   return InkWell(
+  //     onTap: () {
+  //       Navigator.pushNamed(context, route);
+  //     },
+  //     child: Text(
+  //       text,
+  //       style: const TextStyle(
+  //         fontSize: 16.0,
+  //       ),
+  //     ),
+  //   );
+  // }
+  Widget _buildAppBarItem(BuildContext context, String text, Widget page) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, route);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
       },
       child: Text(
         text,

@@ -68,7 +68,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - /Users/eun/urop_sudoku/sudoku_front/lib/img/profile-user.png
+    - /Users/eojin1/Front/lib/img/profile-user.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

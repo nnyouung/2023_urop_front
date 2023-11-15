@@ -43,21 +43,6 @@ class SignupPage extends StatelessWidget {
     }
   }
 
-  // Widget signupButton() {
-  //   return ElevatedButton(
-  //     onPressed: () async {
-  //       await check();
-  //     },
-  //     style: ElevatedButton.styleFrom(
-  //       padding: EdgeInsets.all(0.0),
-  //     ),
-  //     child: const Text(
-  //       '회원가입',
-  //       style: TextStyle(fontSize: 9),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

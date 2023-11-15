@@ -81,11 +81,11 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         // 서버 응답 데이터에서 사용자 ID 추출
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-        final String userId = responseData['id'].toString();
+        final String email = responseData['email'].toString();
 
         // 사용자 ID를 SharedPreferences를 사용해 저장
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('userId', userId);
+        prefs.setString('email', email);
 
         // 홈 페이지로 이동
         Navigator.pushReplacement(
