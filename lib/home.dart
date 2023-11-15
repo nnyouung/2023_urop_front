@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart'; // 다른 페이지로 이동하기 위함
 import 'ranking.dart';
@@ -8,6 +9,7 @@ import 'sudokugame.dart';
 import 'package:http/http.dart' as http; // HTTP 패키지 import
 import 'dart:convert'; // JSON 인코딩/디코딩을 위한 패키지 import
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,18 +22,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       title: 'Sudoku',
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
       home: const MyHomePage(title: 'Sudoku'),
-      routes: {
-        // map 형식으로 라우트하게끔
-        '/automatic': (context) => const SudokuGame(),
-        '/picture': (context) => const PicturePage(),
-        // '/ar': (context) => ARPage(),
-        '/ranking': (context) => RankingPage(),
-      },
     );
   }
 }
@@ -93,33 +89,28 @@ Future<void> ranking() async {
 // 앱의 홈페이지(앱을 실행했을 때 처음 보이는 페이지) 정의: StatefulWidget 상속
 class _MyHomePageState extends State<MyHomePage> {
   // File? _image;
+  int selectedPage = 0;
+
+  // 호출할 페이지
+  final _pageOptions = [const SudokuGame(), const PicturePage(), RankingPage()];
 
   // 화면을 렌더링하는 메서드: Scaffold 위젯을 이용하여 앱의 레이아웃 정의
   // Scaffold 위젯: 앱의 기본 레이아웃 구조 정의 (속성: appbar, body, drawer 등)
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
-      // 상단바 정의
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
-            const SizedBox(width: 50), // 간격 조정
-            const Text(
+            SizedBox(width: 50), // 간격 조정
+            Text(
               // 타이틀 글씨 설정
               "Make Sudoku",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 500),
-            _buildAppBarItem(context, 'Automatic', const SudokuGame()),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Picture', const PicturePage()),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'AR', RankingPage()),
-            const SizedBox(width: 70),
-            _buildAppBarItem(context, 'Ranking', RankingPage()),
-            const SizedBox(width: 150),
           ],
         ),
         actions: [
@@ -144,47 +135,30 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(width: 50),
         ],
       ),
-      body: const Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16.0),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      body: _pageOptions[selectedPage],
+      bottomNavigationBar: ConvexAppBar(
+        initialActiveIndex: 0, //optional, default as 0
+        backgroundColor: Colors.white, // 배경색
+        color: Colors.grey[500],
+        activeColor: Colors.grey[700],
+        elevation: 1, // elevation 0으로 처리하면 그림자가 제거됨
+        // curveSize: 80, // 동그라미를 감싸는 커브 각도
+        // top: -30,      // 동그라미 사이즈
+        // height: 40,    // 탭 높이
+        items: const [
+          TabItem(
+            icon: Icons.home,  // 메인에 뜨는 화면
+          ),
+          TabItem(icon: Icons.file_copy_rounded),
+          TabItem(icon: Icons.people),
+        ],
 
-  // 상단바의 항목을 만들기 위한 함수
-  // Widget _buildAppBarItem(BuildContext context, String text, String route) {
-  //   // InkWell: 시각적으로 터치 피드백 제공 (일반적으로 잉크 효과)
-  //   return InkWell(
-  //     onTap: () {
-  //       Navigator.pushNamed(context, route);
-  //     },
-  //     child: Text(
-  //       text,
-  //       style: const TextStyle(
-  //         fontSize: 16.0,
-  //       ),
-  //     ),
-  //   );
-  // }
-  Widget _buildAppBarItem(BuildContext context, String text, Widget page) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
-      },
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16.0,
-        ),
+        // 어떤 탭 인덱스를 눌렀는지 트리거 처리하여 페이지를 변경함
+        onTap: (int index) {
+          setState(() {
+            selectedPage = index;
+          });
+        },
       ),
     );
   }
