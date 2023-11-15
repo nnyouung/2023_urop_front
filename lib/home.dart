@@ -60,6 +60,7 @@ class MyHomePage extends StatefulWidget {
 Future<void> ranking() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? email = prefs.getString('email');
+    print(email);
 
     try {
       final response = await http.post(
