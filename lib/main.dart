@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login() async {
     String email = emailController.text;
     String password = passwordController.text;
+    print(email);
 
     try {
       // 서버로 로그인 요청

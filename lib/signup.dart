@@ -9,6 +9,7 @@ class SignupPage extends StatelessWidget {
 
   SignupPage({super.key});
 
+  // 회원가입 함수
   Future<void> signup() async {
     String email = emailController.text;
     String password = passwordController.text;
