@@ -302,9 +302,9 @@ class _SudokuGameState extends State<SudokuGame> {
   Widget build(BuildContext context) {
     // build(전체 요소들 배치)
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sudoku Game'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Sudoku Game'),
+      // ),
       body: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

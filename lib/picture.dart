@@ -83,9 +83,9 @@ class PicturePageState extends State<PicturePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Picture Page'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Picture Page'),
+      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

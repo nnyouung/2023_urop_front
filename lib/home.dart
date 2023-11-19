@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-      title: 'Sudoku',
+      // title: 'Sudoku',
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
