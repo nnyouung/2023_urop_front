@@ -10,16 +10,16 @@ class PicturePage extends StatefulWidget {
 }
 
 class PicturePageState extends State<PicturePage> {
-  XFile? _image; //이미지를 담을 변수 선언
-  final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
+  XFile? _image;  //이미지를 담을 변수 선언
+  final ImagePicker picker = ImagePicker();  //ImagePicker 초기화
 
   //이미지를 가져오는 함수
   Future getImage(ImageSource imageSource) async {
-    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    //pickedFile에 ImagePicker로 가져온 이미지가 담김
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
     if (pickedFile != null) {
       setState(() {
-        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
+        _image = XFile(pickedFile.path);  //가져온 이미지를 _image에 저장
       });
     }
   }
@@ -46,7 +46,7 @@ class PicturePageState extends State<PicturePage> {
         ? SizedBox(
             width: 300,
             height: 300,
-            child: Image.file(File(_image!.path)),  // 가져온 이미지를 화면에 띄워주는 코드
+            child: Image.file(File(_image!.path)),  // 가져온 이미지를 화면에 띄워줌
           )
         : Container(
             width: 300,
@@ -61,20 +61,20 @@ class PicturePageState extends State<PicturePage> {
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey, // Set the button color to gray
+          backgroundColor: Colors.grey,
         ),
           onPressed: () {
-            getImage(ImageSource.camera);  // getImage 함수를 호출해서 카메라로 찍은 사진 가져오기
+            getImage(ImageSource.camera);  // 카메라로 찍은 사진 가져오기
           },
           child: const Text("카메라"),
         ),
         const SizedBox(width: 30),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey, // Set the button color to gray
+          backgroundColor: Colors.grey,
         ),
           onPressed: () {
-            getImage(ImageSource.gallery); //getImage 함수를 호출해서 갤러리에서 사진 가져오기
+            getImage(ImageSource.gallery); // 갤러리에서 사진 가져오기
           },
           child: const Text("갤러리"),
         ),
