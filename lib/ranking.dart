@@ -109,9 +109,9 @@ class _RankingPageState extends State<RankingPage> {
             DataTable(
               // 랭킹 (표 형태)
               columns: const [
-                DataColumn(label: Text('순위'), numeric: true),
+                DataColumn(label: Text('순위')),
                 DataColumn(label: Text('이메일')),
-                DataColumn(label: Text('걸린 시간'), numeric: true),
+                DataColumn(label: Text('걸린 시간')),
               ],
               rows: userRankingList.map((user) {
                 return DataRow(
