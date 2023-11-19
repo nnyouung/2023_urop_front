@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:camera/camera.dart';
-
-List<CameraDescription> cameras = [];
 
 class PicturePage extends StatefulWidget {
   const PicturePage({Key? key}) : super(key: key);
@@ -13,122 +10,75 @@ class PicturePage extends StatefulWidget {
 }
 
 class PicturePageState extends State<PicturePage> {
-  CameraController? _controller;
-  Future<void>? _initializeControllerFuture;
+  XFile? _image; //이미지를 담을 변수 선언
+  final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
 
-  File? _image;
-  bool _imageSelected = false;
-
-  @override
-  void initState() {
-    super.initState();
-    availableCameras().then((availableCameras) {
-      cameras = availableCameras;
-      if (cameras.isNotEmpty) {
-        _controller = CameraController(
-          cameras[0],
-          ResolutionPreset.medium,
-        );
-        _initializeControllerFuture = _controller!.initialize();
-      }
-    });
-  }
-
-  Widget _cameraPreviewWidget() {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return const Text(
-        '카메라를 불러올 수 없습니다.',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
-        ),
-      );
-    }
-    return AspectRatio(
-      aspectRatio: _controller!.value.aspectRatio,
-      child: CameraPreview(_controller!),
-    );
-  }
-
-  Future<void> _getImage(ImageSource source) async {
-    if (source == ImageSource.camera) {
-      await _initializeControllerFuture;
-      final XFile image = await _controller!.takePicture();
+  //이미지를 가져오는 함수
+  Future getImage(ImageSource imageSource) async {
+    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
       setState(() {
-        _image = File(image.path);
-        _imageSelected = true;
+        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
       });
-    } else {
-      final pickedFile = await ImagePicker().pickImage(source: source);
-      setState(() {
-        if (pickedFile != null) {
-          _image = File(pickedFile.path);
-          _imageSelected = true;
-        }
-      });
-    }
-  }
-
-  void _onCompleteButtonPressed() {
-    if (_imageSelected) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('이미지 선택 완료!'),
-        ),
-      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Picture Page'),
-      // ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _cameraPreviewWidget(),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-            ),
-            Container(
-              width: 500,
-              height: 500,
-              decoration: const BoxDecoration(
-                border: null,
-                color: Colors.grey,
-              ),
-              child: _image != null
-                  ? Image.file(_image!)
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.camera),
-                          onPressed: () {
-                            _getImage(ImageSource.camera);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.photo),
-                          onPressed: () {
-                            _getImage(ImageSource.gallery);
-                          },
-                        ),
-                      ],
-                    ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _imageSelected ? _onCompleteButtonPressed : null,
-              child: const Text('선택 완료'),
-            ),
+            const SizedBox(height: 100),
+            _buildPhotoArea(),
+            const SizedBox(height: 20),
+            _buildButton(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPhotoArea() {
+    return _image != null
+        ? SizedBox(
+            width: 300,
+            height: 300,
+            child: Image.file(File(_image!.path)),  // 가져온 이미지를 화면에 띄워주는 코드
+          )
+        : Container(
+            width: 300,
+            height: 300,
+            color: Colors.grey,
+          );
+  }
+
+  Widget _buildButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey, // Set the button color to gray
+        ),
+          onPressed: () {
+            getImage(ImageSource.camera);  // getImage 함수를 호출해서 카메라로 찍은 사진 가져오기
+          },
+          child: const Text("카메라"),
+        ),
+        const SizedBox(width: 30),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey, // Set the button color to gray
+        ),
+          onPressed: () {
+            getImage(ImageSource.gallery); //getImage 함수를 호출해서 갤러리에서 사진 가져오기
+          },
+          child: const Text("갤러리"),
+        ),
+      ],
     );
   }
 }
