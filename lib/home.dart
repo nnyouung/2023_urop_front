@@ -6,6 +6,7 @@ import 'ranking.dart';
 import 'picture.dart';
 import 'my.dart';
 import 'sudokugame.dart';
+import 'ar.dart';
 import 'package:http/http.dart' as http; // HTTP 패키지 import
 import 'dart:convert'; // JSON 인코딩/디코딩을 위한 패키지 import
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedPage = 0;
 
   // 호출할 페이지
-  final _pageOptions = [const SudokuGame(), const PicturePage(), RankingPage()];
+  final _pageOptions = [const SudokuGame(), const PicturePage(), RankingPage(), const ArPage()];
 
   // 화면을 렌더링하는 메서드: Scaffold 위젯을 이용하여 앱의 레이아웃 정의
   // Scaffold 위젯: 앱의 기본 레이아웃 구조 정의 (속성: appbar, body, drawer 등)
@@ -142,9 +143,6 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.grey[500],
         activeColor: Colors.grey[700],
         elevation: 1, // elevation 0으로 처리하면 그림자가 제거됨
-        // curveSize: 80, // 동그라미를 감싸는 커브 각도
-        // top: -30,      // 동그라미 사이즈
-        // height: 40,    // 탭 높이
         items: const [
           TabItem(
             icon: Icons.home,  // 메인에 뜨는 화면
