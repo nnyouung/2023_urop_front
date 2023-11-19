@@ -21,20 +21,13 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  List<My> userRankingList = [];
+  List<My> myRankingList = [];
 
   @override
   void initState() {
     super.initState();
     // 위젯이 초기화될 때 ranking 함수 호출
     ranking();
-  }
-
-  // 받아온 데이터로 userRankingList 업데이트
-  void updateRankingList(List<My> rankingData) {
-    setState(() {
-      userRankingList = rankingData;
-    });
   }
 
   // 랭킹 부분 데이터를 받아오기 위한 통신 코드
@@ -54,29 +47,37 @@ class _MyPageState extends State<MyPage> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        final List<My> rankingData = parseRankingData(data);
-        updateRankingList(rankingData);  // MyRankingPage의 userRankingList를 업데이트
-        print('데이터 받아오기 성공');
-      } else {
-        print('데이터 받아오기 실패, statusCode: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final List<My> rankingData = parseRankingData(data);
+      updateRankingList(rankingData);
+      print('데이터 받아오기 성공');
+    } else {
+      print('데이터 받아오기 실패, statusCode: ${response.statusCode}');
     }
+  } catch (error) {
+    print('에러 발생: $error');
+  }
+}
+
+  // 받아온 데이터로 userRankingList 업데이트
+  void updateRankingList(List<My> rankingData) {
+    setState(() {
+      myRankingList = rankingData;
+    });
   }
 
-  List<My> parseRankingData(List<dynamic> data) {
-    int rank = 1; // 랭킹 초기값
-    return data.map((item) {
-      final My my = My(
-        rank: rank,
-        playtime: item['playtime'] ?? '',
-      );
-      rank++;
-      return my;
-    }).toList();
-  }
+  List<My> parseRankingData(Map<String, dynamic> data) {
+  List<String> durations = (data['durations'] as List<dynamic>).cast<String>();
+  int rank = 1;
+  return durations.map((duration) {
+    final My my = My(
+      rank: rank,
+      playtime: duration,
+    );
+    rank++;
+    return my;
+  }).toList();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +104,7 @@ class _MyPageState extends State<MyPage> {
                 DataColumn(label: Text('순위')),
                 DataColumn(label: Text('걸린 시간')),
               ],
-              rows: userRankingList.map((user) {
+              rows: myRankingList.map((user) {
                 return DataRow(
                   cells: [
                     DataCell(Text(user.rank.toString())),
