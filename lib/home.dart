@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedPage = 0;
 
   // 호출할 페이지
-  final _pageOptions = [const SudokuGame(), const PicturePage(), RankingPage(), const ArPage()];
+  final _pageOptions = [const SudokuGame(), const PicturePage(), const ArPage(), RankingPage()];
 
   // 화면을 렌더링하는 메서드: Scaffold 위젯을 이용하여 앱의 레이아웃 정의
   // Scaffold 위젯: 앱의 기본 레이아웃 구조 정의 (속성: appbar, body, drawer 등)
@@ -148,6 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icons.home,  // 메인에 뜨는 화면
           ),
           TabItem(icon: Icons.file_copy_rounded),
+          TabItem(icon: Icons.remove_red_eye),
           TabItem(icon: Icons.people),
         ],
 
