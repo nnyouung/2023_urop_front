@@ -1,74 +1,96 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class My {
-  final String score;
   final int rank;
-  final String date;
+  final String playtime;
 
   My({
-    required this.score,
     required this.rank,
-    required this.date,
+    required this.playtime,
   });
 }
 
-class MyPage extends StatelessWidget {
-  const MyPage({super.key});
+class MyPage extends StatefulWidget {
+  const MyPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'User Ranking Page',
-      theme: ThemeData(
-        primarySwatch: Colors.grey,
-      ),
-      home: MyRankingPage(),
-    );
-  }
+  _MyPageState createState() => _MyPageState();
 }
 
-class MyRankingPage extends StatelessWidget {
-  MyRankingPage({super.key});
+class _MyPageState extends State<MyPage> {
+  List<My> userRankingList = [];
 
-  // 가상의 유저 랭킹 데이터
-  final List<My> userRankingList = [
-    My(score: '2000', rank: 1, date: '2023.09.27 20:45'),
-    My(score: '1892', rank: 2, date: '2023.09.20 01:15'),
-    My(score: '1800', rank: 3, date: '2023.08.06 16:30'),
-    My(score: '800', rank: 4, date: '2022.11.13 01:12'),
-    My(score: '353', rank: 5, date: '2023.09.26 02:30'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // 위젯이 초기화될 때 ranking 함수 호출
+    ranking();
+  }
 
-  // 화면을 렌더링하는 메서드
+  // 받아온 데이터로 userRankingList 업데이트
+  void updateRankingList(List<My> rankingData) {
+    setState(() {
+      userRankingList = rankingData;
+    });
+  }
+
+  // 랭킹 부분 데이터를 받아오기 위한 통신 코드
+  Future<void> ranking() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? email = prefs.getString('email');
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://ec2-54-172-150-42.compute-1.amazonaws.com:8080/users/ranking'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "email": email,  // 이메일에 맞는 정보를 받기 위해 이메일을 포함하여 요청
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<My> rankingData = parseRankingData(data);
+        updateRankingList(rankingData);  // MyRankingPage의 userRankingList를 업데이트
+        print('데이터 받아오기 성공');
+      } else {
+        print('데이터 받아오기 실패, statusCode: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+    }
+  }
+
+  List<My> parseRankingData(List<dynamic> data) {
+    int rank = 1; // 랭킹 초기값
+    return data.map((item) {
+      final My my = My(
+        rank: rank,
+        playtime: item['playtime'] ?? '',
+      );
+      rank++;
+      return my;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Ranking'),
+        title: const Text('My'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              // 프로필 이미지 -> 일단 임의로 채워놓음
-              radius: 60,
-              backgroundImage: AssetImage(
-                '/Users/eojin1/Front/lib/img/profile-user.png', // 경로 바꿔주기 (pubspec.yaml의 경로도 바꿔줘야 함)
-              ),
-            ),
-            const SizedBox(height: 20), // 간격 조정
-            const Text(
-              // 유저 닉네임 -> 일단 임의로 채워놓음
-              'UserNickname',
-              style: TextStyle(
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 70),
             const Text(
               // 표 제목
-              'My ranking',
+              '내 랭킹',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -78,16 +100,14 @@ class MyRankingPage extends StatelessWidget {
             DataTable(
               // 표
               columns: const [
-                DataColumn(label: Text('Rank')),
-                DataColumn(label: Text('Score')),
-                DataColumn(label: Text('Date')),
+                DataColumn(label: Text('순위')),
+                DataColumn(label: Text('걸린 시간')),
               ],
               rows: userRankingList.map((user) {
                 return DataRow(
                   cells: [
                     DataCell(Text(user.rank.toString())),
-                    DataCell(Text(user.score.toString())),
-                    DataCell(Text(user.date.toString())),
+                    DataCell(Text(user.playtime)),
                   ],
                 );
               }).toList(),

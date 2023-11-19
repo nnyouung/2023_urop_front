@@ -42,50 +42,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-// 다른 페이지로 넘어가기 위한 함수: 주어진 url을 열 수 있으면 해당 url로 이동
-// 취소선: 해당 코드 줄이 "비동기 함수"를 호출하기 때문으로, 해당 함수가 비동기적으로 실행되고 완료될 때까지 기다리라는 의미 -> 비동기 함수 호출 시 앞에 await 키워드를 사용
-// _launchURL(String url) async {
-//   if (await canLaunch(url)) {
-//     await launch(url);
-//   } else {
-//     throw 'URL을 열 수 없습니다: $url';
-//   }
-// }
-
-
-// 랭킹 부분 데이터를 받아오기 위한 통신 코드
-Future<void> ranking() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? email = prefs.getString('email');
-    print(email);
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://ec2-54-172-150-42.compute-1.amazonaws.com:8080/users/ranking'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "email": email,   // 이메일에 맞는 정보를 받기 위해 이메일을 포함하여 요청
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        print(data);
-
-        // 데이터 받아오기 성공 시의 동작 (여기서는 간단히 출력만)
-        print('데이터 받아오기 성공');
-      } else {
-        // 데이터 받아오기 실패 시의 동작 (여기서는 간단히 출력만)
-        print('데이터 받아오기 실패, statusCode: ${response.statusCode}');
-      }
-    } catch (error) {
-      // 예외 처리 (네트워크 에러 등)
-      print('에러 발생: $error');
-    }
-  }
-
 
 // 앱의 홈페이지(앱을 실행했을 때 처음 보이는 페이지) 정의: StatefulWidget 상속
 class _MyHomePageState extends State<MyHomePage> {
@@ -119,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
             // 사용자 계정
             icon: const Icon(Icons.person),
             onPressed: () {
-              ranking();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MyPage()),
