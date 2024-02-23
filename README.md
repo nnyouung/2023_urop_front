@@ -30,11 +30,13 @@
 
 <br>
 
-## 💡 github.io 페이지 (<a href="https://2023-2-urop.github.io/">github.io</a>)
+## 💡 사용방법 관련 github.io
+### [Go to github.io](https://2023-2-urop.github.io/)
 
 <br>
 
-## 💡 2023 한국소프트웨어종합학술대회 (KSC 2023) 참여 및 발표 (오픈소스소프트웨어 부문)
+## 💡 2023 한국소프트웨어종합학술대회 (KSC 2023) 참여 및 발표
+### 오픈소스소프트웨어 부문
 <img src="https://github.com/nnyouung/enbrain-kookmin/assets/104901660/2708ce4f-7b7f-4266-a0ef-a9391c915116" width="80%">
 
 <!-- # flutter_web
